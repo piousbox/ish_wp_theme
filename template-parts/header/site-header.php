@@ -1,8 +1,11 @@
-<?
+<?php
 /**
- * Display site header
- * _vp_ 2022-11-09
-**/
+ * Displays the site header.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Twenty_One
+ * @since Twenty Twenty-One 1.0
+ */
 
 $wrapper_classes  = 'site-header';
 $wrapper_classes .= has_custom_logo() ? ' has-logo' : '';
@@ -10,11 +13,9 @@ $wrapper_classes .= ( true === get_theme_mod( 'display_title_and_tagline', true 
 $wrapper_classes .= has_nav_menu( 'primary' ) ? ' has-menu' : '';
 ?>
 
-<div class="site-header-wrapper">
-  <header id="masthead" class="<?= $wrapper_classes ?>" >
+<header id="masthead" class="<?php echo esc_attr( $wrapper_classes ); ?>">
 
-    <? get_template_part( 'template-parts/header/site-branding' ); ?>
-    <? get_template_part( 'template-parts/header/site-nav' ); ?>
+	<?php get_template_part( 'template-parts/header/site-branding' ); ?>
+	<?php get_template_part( 'template-parts/header/site-nav' ); ?>
 
-  </header>
-</div>
+</header><!-- #masthead -->

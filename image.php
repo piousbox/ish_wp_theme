@@ -16,7 +16,7 @@ while ( have_posts() ) {
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		<header class="entry-header alignwide">
 			<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
-		</header>
+		</header><!-- .entry-header -->
 
 		<div class="entry-content">
 			<figure class="wp-block-image">
@@ -35,7 +35,7 @@ while ( have_posts() ) {
 				<?php if ( wp_get_attachment_caption() ) : ?>
 					<figcaption class="wp-caption-text"><?php echo wp_kses_post( wp_get_attachment_caption() ); ?></figcaption>
 				<?php endif; ?>
-			</figure>
+			</figure><!-- .wp-block-image -->
 
 			<?php
 			the_content();
@@ -80,6 +80,7 @@ while ( have_posts() ) {
 			if ( $metadata ) {
 				printf(
 					'<span class="full-size-link"><span class="screen-reader-text">%1$s</span><a href="%2$s">%3$s &times; %4$s</a></span>',
+					/* translators: Hidden accessibility text. */
 					esc_html_x( 'Full size', 'Used before full size attachment link.', 'twentytwentyone' ), // phpcs:ignore WordPress.Security.EscapeOutput
 					esc_url( wp_get_attachment_url() ),
 					absint( $metadata['width'] ),

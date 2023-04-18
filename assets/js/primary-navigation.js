@@ -1,29 +1,33 @@
 /**
+ * File primary-navigation.js.
+ *
  * Required to open and close the mobile navigation.
  */
 
 /**
  * Toggle an attribute's value
  *
+ * @since Twenty Twenty-One 1.0
+ *
  * @param {Element} el - The element.
  * @param {boolean} withListeners - Whether we want to add/remove listeners or not.
-**/
-function toggleAriaExpanded( el, withListeners ) {
+ */
+function twentytwentyoneToggleAriaExpanded( el, withListeners ) {
 	if ( 'true' !== el.getAttribute( 'aria-expanded' ) ) {
 		el.setAttribute( 'aria-expanded', 'true' );
-		submenuPosition( el.parentElement );
+		twentytwentyoneSubmenuPosition( el.parentElement );
 		if ( withListeners ) {
-			document.addEventListener( 'click', collapseMenuOnClickOutside );
+			document.addEventListener( 'click', twentytwentyoneCollapseMenuOnClickOutside );
 		}
 	} else {
 		el.setAttribute( 'aria-expanded', 'false' );
 		if ( withListeners ) {
-			document.removeEventListener( 'click', collapseMenuOnClickOutside );
+			document.removeEventListener( 'click', twentytwentyoneCollapseMenuOnClickOutside );
 		}
 	}
 }
 
-function collapseMenuOnClickOutside( event ) {
+function twentytwentyoneCollapseMenuOnClickOutside( event ) {
 	if ( ! document.getElementById( 'site-navigation' ).contains( event.target ) ) {
 		document.getElementById( 'site-navigation' ).querySelectorAll( '.sub-menu-toggle' ).forEach( function( button ) {
 			button.setAttribute( 'aria-expanded', 'false' );
@@ -37,8 +41,8 @@ function collapseMenuOnClickOutside( event ) {
  * @since Twenty Twenty-One 1.0
  *
  * @param {Element} li - The li element.
-**/
-function submenuPosition( li ) {
+ */
+function twentytwentyoneSubmenuPosition( li ) {
 	var subMenu = li.querySelector( 'ul.sub-menu' ),
 		rect,
 		right,
@@ -67,7 +71,7 @@ function submenuPosition( li ) {
  * @since Twenty Twenty-One 1.0
  *
  * @param {Element} el - The element.
-**/
+ */
 function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 	// Close other expanded items.
 	el.closest( 'nav' ).querySelectorAll( '.sub-menu-toggle' ).forEach( function( button ) {
@@ -77,7 +81,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 	} );
 
 	// Toggle aria-expanded on the button.
-	toggleAriaExpanded( el, true );
+	twentytwentyoneToggleAriaExpanded( el, true );
 
 	// On tab-away collapse the menu.
 	el.parentNode.querySelectorAll( 'ul > li:last-child > a' ).forEach( function( linkEl ) {
@@ -96,7 +100,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 	 * @since Twenty Twenty-One 1.0
 	 *
 	 * @param {string} id - The ID.
-	**/
+	 */
 	var navMenu = function( id ) {
 		var wrapper = document.body, // this is the element to which a CSS class is added when a mobile nav menu is open
 			mobileButton = document.getElementById( id + '-mobile-menu' ),
@@ -111,7 +115,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 			mobileButton.onclick = function() {
 				wrapper.classList.toggle( id + '-navigation-open' );
 				wrapper.classList.toggle( 'lock-scrolling' );
-				toggleAriaExpanded( mobileButton );
+				twentytwentyoneToggleAriaExpanded( mobileButton );
 				mobileButton.focus();
 			};
 		}
@@ -121,7 +125,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 		 * Adapted from Twenty Twenty.
 		 *
 		 * @since Twenty Twenty-One 1.0
-		**/
+		 */
 		document.addEventListener( 'keydown', function( event ) {
 			var modal, elements, selectors, lastEl, firstEl, activeEl, tabKey, shiftKey, escKey;
 			if ( ! wrapper.classList.contains( id + '-navigation-open' ) ) {
@@ -142,7 +146,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 			if ( escKey ) {
 				event.preventDefault();
 				wrapper.classList.remove( id + '-navigation-open', 'lock-scrolling' );
-				toggleAriaExpanded( mobileButton );
+				twentytwentyoneToggleAriaExpanded( mobileButton );
 				mobileButton.focus();
 			}
 
@@ -167,12 +171,12 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 		 * Adapted from Twenty Twenty.
 		 *
 		 * @since Twenty Twenty-One 1.1
-		**/
-		document.addEventListener( 'click', function( event ) {
+		 */
+		document.getElementById( 'site-navigation' ).addEventListener( 'click', function( event ) {
 			// If target onclick is <a> with # within the href attribute
-			if ( event.target.hash && event.target.hash.includes( '#' ) ) {
+			if ( event.target.hash ) {
 				wrapper.classList.remove( id + '-navigation-open', 'lock-scrolling' );
-				toggleAriaExpanded( mobileButton );
+				twentytwentyoneToggleAriaExpanded( mobileButton );
 				// Wait 550 and scroll to the anchor.
 				setTimeout(function () {
 					var anchor = document.getElementById(event.target.hash.slice(1));
@@ -186,7 +190,7 @@ function twentytwentyoneExpandSubMenu( el ) { // jshint ignore:line
 		navMenuEl.querySelectorAll( '.menu-wrapper > .menu-item-has-children' ).forEach( function( li ) {
 			li.addEventListener( 'mouseenter', function() {
 				this.querySelector( '.sub-menu-toggle' ).setAttribute( 'aria-expanded', 'true' );
-				submenuPosition( li );
+				twentytwentyoneSubmenuPosition( li );
 			} );
 			li.addEventListener( 'mouseleave', function() {
 				this.querySelector( '.sub-menu-toggle' ).setAttribute( 'aria-expanded', 'false' );

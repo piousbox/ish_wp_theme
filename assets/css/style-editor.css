@@ -74,19 +74,11 @@
 	--global--color-white: #fff;
 	--global--color-white-50: rgba(255, 255, 255, 0.5);
 	--global--color-white-90: rgba(255, 255, 255, 0.9);
-	--global--color-primary: var(--global--color-dark-gray);
-
-	/* Body text color, site title, footer text color. */
-	--global--color-secondary: var(--global--color-gray);
-
-	/* Headings */
+	--global--color-primary: var(--global--color-dark-gray); /* Body text color, site title, footer text color. */
+	--global--color-secondary: var(--global--color-gray); /* Headings */
 	--global--color-primary-hover: var(--global--color-primary);
-	--global--color-background: var(--global--color-green);
-
-	/* Mint, default body background */
-	--global--color-border: var(--global--color-primary);
-
-	/* Used for borders (separators) */
+	--global--color-background: var(--global--color-green); /* Mint, default body background */
+	--global--color-border: var(--global--color-primary); /* Used for borders (separators) */
 
 	/* Spacing */
 	--global--spacing-unit: 20px;
@@ -135,6 +127,7 @@
 	--entry-header--color-hover: var(--global--color-primary-hover);
 	--entry-header--color-focus: var(--global--color-secondary);
 	--entry-header--font-size: var(--heading--font-size-h2);
+	--entry-content--font-family: var(--global--font-secondary);
 	--entry-author-bio--font-family: var(--heading--font-family);
 	--entry-author-bio--font-size: var(--heading--font-size-h4);
 
@@ -221,6 +214,19 @@
 	--widget--line-height-title: 1.4;
 	--widget--font-weight-title: 700;
 	--widget--spacing-menu: calc(0.66 * var(--global--spacing-unit));
+
+	/* Admin-bar height */
+	--global--admin-bar--height: 0px;
+}
+
+.admin-bar {
+	--global--admin-bar--height: 32px;
+}
+@media only screen and (max-width: 782px) {
+
+	.admin-bar {
+		--global--admin-bar--height: 46px;
+	}
 }
 
 @media only screen and (min-width: 652px) {
@@ -758,7 +764,6 @@ a:hover {
 	letter-spacing: var(--heading--letter-spacing-h2);
 	line-height: var(--heading--line-height-h2);
 	padding: 0;
-	max-width: inherit;
 	text-align: inherit;
 }
 
@@ -924,19 +929,6 @@ a:hover {
 
 .wp-block-gallery figcaption a {
 	color: var(--global--color-white);
-}
-
-.wp-block-group {
-	display: block;
-	clear: both;
-	display: flow-root;
-}
-
-.wp-block-group:before,
-.wp-block-group:after {
-	content: "";
-	display: block;
-	clear: both;
 }
 
 .wp-block-group.has-background {
@@ -1371,13 +1363,13 @@ dt {
 	border: calc(3 * var(--separator--height)) solid var(--global--color-border);
 }
 
-.wp-block-navigation .wp-block-navigation__container {
-	background: var(--global--color-background);
-	padding: 0;
+.wp-block-navigation [data-block] {
+	margin-top: revert;
+	margin-bottom: revert;
 }
 
-.wp-block-navigation .wp-block-navigation-link .wp-block-navigation-link__content {
-	padding: var(--primary-nav--padding);
+.wp-block-navigation .wp-block-navigation__container {
+	background: var(--global--color-background);
 }
 
 .wp-block-navigation .wp-block-navigation-link .wp-block-navigation-link__label {
@@ -1547,7 +1539,7 @@ pre.wp-block-preformatted {
 }
 
 .wp-block-quote .wp-block-quote__citation {
-	color: var(--global--color-primary);
+	color: currentColor;
 	font-size: var(--global--font-size-xs);
 	font-style: var(--quote--font-style-cite);
 }

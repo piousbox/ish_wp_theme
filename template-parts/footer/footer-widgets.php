@@ -1,14 +1,14 @@
-<?php
-/**
- * Displays the site footer widget area.
+<?
+/*
+ * Displays the footer widget area.
+ *
 **/
 
-if ( is_active_sidebar( 'footer-top' ) ) : ?>
+if ( is_active_sidebar( 'widget-footer-1' ) ) : ?>
 
-  <footer class='footer-top' >
-    <aside class="widget-area alignwide">
-      <?php dynamic_sidebar( 'footer-top' ); ?>
-    </aside>
-  </footer>
+	<aside class="widget-area">
+		<? dynamic_sidebar( 'widget-footer-1' ); ?>
+	</aside>
 
-<?php endif; ?>
+	<?
+endif;

@@ -1,256 +1,389 @@
-<?php
+<?
 
-// $hero_url_default = "https://d15g8hc4183yn4.cloudfront.net/wp-content/uploads/2022/09/29191326/1920x450-dark-galaxy-1.jpg";
-// $hero_url_default = "https://d15g8hc4183yn4.cloudfront.net/wp-content/uploads/2022/12/26151217/1500x450-clouds-19.jpg";
-$hero_url_default = "https://d15g8hc4183yn4.cloudfront.net/wp-content/uploads/2023/04/08142951/1536x430-ai-bg-wallpaper-clouds-2.jpg";
+// This theme requires WordPress 5.3 or later.
+if ( version_compare( $GLOBALS['wp_version'], '5.3', '<' ) ) {
+  require get_template_directory() . '/inc/back-compat.php';
+}
 
-/*
- * _vp_ 2022-09-27
-**/
-function do_setup() {
-  include get_template_directory() . '/inc/category-meta-fields.php';
-  load_theme_textdomain( 't21', get_template_directory() . '/languages' );
+if ( !function_exists( 'ish_setup' ) ) {
+  function ish_setup() {
 
-  add_theme_support( 'custom-logo' );
-  add_theme_support( 'automatic-feed-links' ); // Add default posts and comments RSS feed links to head.
+    remove_theme_support( 'widgets-block-editor' );
+    add_filter('do_redirect_guess_404_permalink', '__return_false');
+    add_filter('gutenberg_can_edit_post', '__return_false');
+    add_filter('use_block_editor_for_post', '__return_false');
 
-  add_theme_support( 'title-tag' ); // Let WordPress manage the document title.
+    /*
+     * Make theme available for translation.
+     * Translations can be filed in the /languages/ directory.
+     * If you're building a theme based on Twenty Twenty-One, use a find and replace
+     * to change 'twentytwentyone' to the name of your theme in all the template files.
+     */
+    load_theme_textdomain( 't21', get_template_directory() . '/languages' );
 
-  remove_theme_support( 'widgets-block-editor' );
-  // show_admin_bar(false);
+    // Add default posts and comments RSS feed links to head.
+    add_theme_support( 'automatic-feed-links' );
 
-  add_filter('do_redirect_guess_404_permalink', '__return_false');
-  add_filter('gutenberg_can_edit_post', '__return_false');
-  add_filter('use_block_editor_for_post', '__return_false');
-  wp_deregister_script('autosave');
+    /*
+     * Let WordPress manage the document title.
+     * This theme does not use a hard-coded <title> tag in the document head,
+     * WordPress will provide it for us.
+     */
+    add_theme_support( 'title-tag' );
 
-  add_theme_support('post-formats', array('gallery',
-                                          'image',
-                                          'quote',
-                                          'video',
-  ) );
+    add_theme_support('post-formats', array('link', 'aside', 'gallery', 'image', 'video') );
 
-  add_theme_support( 'post-thumbnails' ); // set_post_thumbnail_size( 1568, 9999 );
+    /*
+     * Enable support for Post Thumbnails on posts and pages.
+     *
+     * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+     */
+    add_theme_support( 'post-thumbnails' );
+    set_post_thumbnail_size( 1568, 9999 );
 
+    register_nav_menus(
+      array(
+        'primary' => esc_html__( 'Primary menu', 'twentytwentyone' ),
+        'footer'  => esc_html__( 'Secondary menu', 'twentytwentyone' ),
+      )
+    );
 
-  register_nav_menus(array(
-    'primary' => esc_html__( 'Primary menu' ),
-    'footer'  => esc_html__( 'Footer menu' ),
-  ) );
-  register_nav_menu('footer', 'footer');
+    /*
+     * Switch default core markup for search form, comment form, and comments
+     * to output valid HTML5.
+     */
+    add_theme_support( 'html5', array(
+      'comment-form',
+      'comment-list',
+      'gallery',
+      'caption',
+      'style',
+      'script',
+      'navigation-widgets',
+    ) );
 
-  add_theme_support('html5', array( 'comment-form',
-                                    'comment-list',
-                                    'gallery',
-                                    'caption',
-                                    'style',
-                                    'script',
-                                    'navigation-widgets',
-  ) );
+    /*
+     * Add support for core custom logo.
+     *
+     * @link https://codex.wordpress.org/Theme_Logo
+     */
+    $logo_width  = 300;
+    $logo_height = 100;
 
-  add_theme_support( 'customize-selective-refresh-widgets' );
-  add_theme_support( 'wp-block-styles' );
-  add_theme_support( 'align-wide' ); // Add support for full and wide align images.
+    add_theme_support( 'custom-logo', array(
+      'height'               => $logo_height,
+      'width'                => $logo_width,
+      'flex-width'           => true,
+      'flex-height'          => true,
+      'unlink-homepage-logo' => true,
+    ) );
 
-  // Editor color palette.
-  $black     = '#000000';
-  $dark_gray = '#28303D';
-  $gray      = '#39414D';
-  $green     = '#D1E4DD';
-  $blue      = '#D1DFE4';
-  $purple    = '#D1D1E4';
-  $red       = '#E4D1D1';
-  $orange    = '#E4DAD1';
-  $yellow    = '#EEEADD';
-  $white     = '#FFFFFF';
+    add_theme_support( 'customize-selective-refresh-widgets' );
+    add_theme_support( 'wp-block-styles' );
+    add_theme_support( 'align-wide' );
 
-  add_theme_support('editor-color-palette', array(
-    array('name'  => esc_html__( 'Black' ),
+    add_theme_support( 'editor-styles' );
+    $background_color = get_theme_mod( 'background_color', 'D1E4DD' );
+    if ( 127 > Twenty_Twenty_One_Custom_Colors::get_relative_luminance_from_hex( $background_color ) ) {
+      add_theme_support( 'dark-editor-style' );
+    }
+
+    $editor_stylesheet_path = './assets/css/style-editor.css';
+
+    // Note, the is_IE global variable is defined by WordPress and is used
+    // to detect if the current browser is internet explorer.
+    global $is_IE;
+    if ( $is_IE ) {
+      $editor_stylesheet_path = './assets/css/ie-editor.css';
+    }
+
+    // Enqueue editor styles.
+    add_editor_style( $editor_stylesheet_path );
+
+    // Add custom editor font sizes.
+    add_theme_support('editor-font-sizes',
+      array(
+        array(
+          'name'      => esc_html__( 'Extra small', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'XS', 'Font size', 'twentytwentyone' ),
+          'size'      => 16,
+          'slug'      => 'extra-small',
+        ),
+        array(
+          'name'      => esc_html__( 'Small', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'S', 'Font size', 'twentytwentyone' ),
+          'size'      => 18,
+          'slug'      => 'small',
+        ),
+        array(
+          'name'      => esc_html__( 'Normal', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'M', 'Font size', 'twentytwentyone' ),
+          'size'      => 20,
+          'slug'      => 'normal',
+        ),
+        array(
+          'name'      => esc_html__( 'Large', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'L', 'Font size', 'twentytwentyone' ),
+          'size'      => 24,
+          'slug'      => 'large',
+        ),
+        array(
+          'name'      => esc_html__( 'Extra large', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'XL', 'Font size', 'twentytwentyone' ),
+          'size'      => 40,
+          'slug'      => 'extra-large',
+        ),
+        array(
+          'name'      => esc_html__( 'Huge', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'XXL', 'Font size', 'twentytwentyone' ),
+          'size'      => 96,
+          'slug'      => 'huge',
+        ),
+        array(
+          'name'      => esc_html__( 'Gigantic', 'twentytwentyone' ),
+          'shortName' => esc_html_x( 'XXXL', 'Font size', 'twentytwentyone' ),
+          'size'      => 144,
+          'slug'      => 'gigantic',
+        ),
+      )
+    );
+
+    // Custom background color.
+    add_theme_support('custom-background',
+      array(
+        'default-color' => 'd1e4dd',
+      )
+    );
+
+    // Editor color palette.
+    $black     = '#000000';
+    $dark_gray = '#28303D';
+    $gray      = '#39414D';
+    $green     = '#D1E4DD';
+    $blue      = '#D1DFE4';
+    $purple    = '#D1D1E4';
+    $red       = '#E4D1D1';
+    $orange    = '#E4DAD1';
+    $yellow    = '#EEEADD';
+    $white     = '#FFFFFF';
+
+    add_theme_support('editor-color-palette',
+      array(
+        array(
+          'name'  => esc_html__( 'Black', 'twentytwentyone' ),
           'slug'  => 'black',
           'color' => $black,
-    ),
-    array('name'  => esc_html__( 'Dark gray' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Dark gray', 'twentytwentyone' ),
           'slug'  => 'dark-gray',
           'color' => $dark_gray,
-    ),
-    array('name'  => esc_html__( 'Gray' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Gray', 'twentytwentyone' ),
           'slug'  => 'gray',
           'color' => $gray,
-    ),
-    array('name'  => esc_html__( 'Green' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Green', 'twentytwentyone' ),
           'slug'  => 'green',
           'color' => $green,
-    ),
-    array('name'  => esc_html__( 'Blue' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Blue', 'twentytwentyone' ),
           'slug'  => 'blue',
           'color' => $blue,
-    ),
-    array('name'  => esc_html__( 'Purple' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Purple', 'twentytwentyone' ),
           'slug'  => 'purple',
           'color' => $purple,
-    ),
-    array('name'  => esc_html__( 'Red' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Red', 'twentytwentyone' ),
           'slug'  => 'red',
           'color' => $red,
-    ),
-    array('name'  => esc_html__( 'Orange' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Orange', 'twentytwentyone' ),
           'slug'  => 'orange',
           'color' => $orange,
-    ),
-    array('name'  => esc_html__( 'Yellow' ),
+        ),
+        array(
+          'name'  => esc_html__( 'Yellow', 'twentytwentyone' ),
           'slug'  => 'yellow',
           'color' => $yellow,
-    ),
-    array('name'  => esc_html__( 'White' ),
+        ),
+        array(
+          'name'  => esc_html__( 'White', 'twentytwentyone' ),
           'slug'  => 'white',
           'color' => $white,
-    ),
-  ) );
+        ),
+      )
+    );
 
-  add_theme_support('editor-gradient-presets', array(
-    array('name'     => esc_html__( 'Purple to yellow' ),
+    add_theme_support( 'editor-gradient-presets',
+      array(
+        array(
+          'name'     => esc_html__( 'Purple to yellow', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $purple . ' 0%, ' . $yellow . ' 100%)',
           'slug'     => 'purple-to-yellow',
-    ),
-    array('name'     => esc_html__( 'Yellow to purple' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Yellow to purple', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $purple . ' 100%)',
           'slug'     => 'yellow-to-purple',
-    ),
-    array('name'     => esc_html__( 'Green to yellow' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Green to yellow', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $green . ' 0%, ' . $yellow . ' 100%)',
           'slug'     => 'green-to-yellow',
-    ),
-    array('name'     => esc_html__( 'Yellow to green' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Yellow to green', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $green . ' 100%)',
           'slug'     => 'yellow-to-green',
-    ),
-    array('name'     => esc_html__( 'Red to yellow' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Red to yellow', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $red . ' 0%, ' . $yellow . ' 100%)',
           'slug'     => 'red-to-yellow',
-    ),
-    array('name'     => esc_html__( 'Yellow to red' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Yellow to red', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $red . ' 100%)',
           'slug'     => 'yellow-to-red',
-    ),
-    array('name'     => esc_html__( 'Purple to red' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Purple to red', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $purple . ' 0%, ' . $red . ' 100%)',
           'slug'     => 'purple-to-red',
-    ),
-    array('name'     => esc_html__( 'Red to purple' ),
+        ),
+        array(
+          'name'     => esc_html__( 'Red to purple', 'twentytwentyone' ),
           'gradient' => 'linear-gradient(160deg, ' . $red . ' 0%, ' . $purple . ' 100%)',
           'slug'     => 'red-to-purple',
-    ),
-  ) );
+        ),
+      )
+    );
 
-  add_theme_support( 'responsive-embeds' );
-  add_theme_support( 'custom-line-height' );
-  add_theme_support( 'experimental-link-color' );
-  add_theme_support( 'custom-spacing' );
+    /*
+    * Adds starter content to highlight the theme on fresh sites.
+    * This is done conditionally to avoid loading the starter content on every
+    * page load, as it is a one-off operation only needed once in the customizer.
+    */
+    if ( is_customize_preview() ) {
+      require get_template_directory() . '/inc/starter-content.php';
+      add_theme_support( 'starter-content', twenty_twenty_one_get_starter_content() );
+    }
 
-  add_filter( 'rss_widget_feed_link', '__return_false' );
-  add_filter('gutenberg_can_edit_post', '__return_false');
-  add_filter('use_block_editor_for_post', '__return_false');
-  add_filter('widget_text', 'do_shortcode');
+    // Add support for responsive embedded content.
+    add_theme_support( 'responsive-embeds' );
 
-  // ('pll_check_canonical_url', '__return_false', 99, 2);
-  add_filter( 'pll_check_canonical_url', '__return_false' );
+    // Add support for custom line height controls.
+    add_theme_support( 'custom-line-height' );
 
-  remove_action( 'template_redirect', 'wp_redirect_admin_locations', 1000 );
+    // Add support for experimental link color control.
+    add_theme_support( 'experimental-link-color' );
 
+    // Add support for experimental cover block spacing.
+    add_theme_support( 'custom-spacing' );
+
+    // Add support for custom units.
+    // This was removed in WordPress 5.6 but is still required to properly support WP 5.5.
+    add_theme_support( 'custom-units' );
+
+    // Remove feed icon link from legacy RSS widget.
+    add_filter( 'rss_widget_feed_link', '__return_empty_string' );
+  }
 }
-add_action( 'after_setup_theme', 'do_setup' );
+add_action( 'after_setup_theme', 'ish_setup' );
 
-
-function wco_get_header() {
-  remove_action('wp_head', '_admin_bar_bump_cb');
-}
-add_action('get_header', 'wco_get_header');
-
-
-function wco_admin_enqueue_scripts() {
-  wp_enqueue_style('admin-styles', get_template_directory_uri() . '/assets/css/admin.css');
-}
-add_action('admin_enqueue_scripts', 'wco_admin_enqueue_scripts');
-
-
-
-
-/**
- * Register widget area. _vp_ 2022-11-11
+/*
+ * register widget areas
 **/
-function wco_widgets_init() {
+add_action( 'widgets_init', function () {
+  register_sidebar(array(
+    'name'          => esc_html__( 'Footer', 't21' ),
+    'id'            => 'widget-footer-1',
+    'description'   => esc_html__( 'Add widgets here to appear in your footer.', 'twentytwentyone' ),
+    'before_widget' => '<section id="%1$s" class="widget %2$s">',
+    'after_widget'  => '</section>',
+    'before_title'  => '<h2 class="widget-title">',
+    'after_title'   => '</h2>',
+  ) );
 
   register_sidebar(array(
-    'name'          => 'Footer Col-1',
-    'id'            => 'footer-1',
-    'description'   => esc_html__( 'Add widgets here to appear in your footer.' ),
+    'name'          => esc_html__( 'Footer', 't21' ),
+    'id'            => 'widget-markers-1',
+    'description'   => esc_html__( 'Add widgets here to appear in your footer.', 'twentytwentyone' ),
     'before_widget' => '<section id="%1$s" class="widget %2$s">',
     'after_widget'  => '</section>',
     'before_title'  => '<h2 class="widget-title">',
     'after_title'   => '</h2>',
   ) );
-  register_sidebar(array(
-    'name'          => 'Footer Col-2',
-    'id'            => 'footer-2',
-    'description'   => esc_html__( 'Add widgets here to appear in your footer.' ),
-    'before_widget' => '<section id="%1$s" class="widget %2$s">',
-    'after_widget'  => '</section>',
-    'before_title'  => '<h2 class="widget-title">',
-    'after_title'   => '</h2>',
-  ) );
-  register_sidebar(array(
-    'name'          => 'Footer Col-3',
-    'id'            => 'footer-3',
-    'description'   => esc_html__( 'Add widgets here to appear in your footer.' ),
-    'before_widget' => '<section id="%1$s" class="widget %2$s">',
-    'after_widget'  => '</section>',
-    'before_title'  => '<h2 class="widget-title">',
-    'after_title'   => '</h2>',
-  ) );
-  // register_widget('FooterTop');
+} );
 
-  register_sidebar(array(
-    'name'          => 'Sidebar',
-    'id'            => 'sidebar-right',
-    'description'   => esc_html__( 'Add widgets here to appear in your sidebar.' ),
-    'before_widget' => '<section id="%1$s" class="widget %2$s">',
-    'after_widget'  => '</section>',
-    'before_title'  => '<h2 class="widget-title">',
-    'after_title'   => '</h2>',
-  ) );
-  // register_widget('Sidebar');
-
+/*
+ * From: https://developer.wordpress.org/reference/functions/add_rewrite_rule/
+**/
+function add_rules_for_rewrite() {
+  add_rewrite_rule(
+    'en/cities/travel-to/([a-zA-Z0-9-_]+)/?$',
+    'index.php?category_name=$matches[1]',
+    'top');
 }
-add_action( 'widgets_init', 'wco_widgets_init' );
+add_action( 'init', 'add_rules_for_rewrite' );
+add_filter( 'query_vars', function( $query_vars ) {
+  $query_vars[] = 'category_name';
+  return $query_vars;
+} );
 
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
  *
- * Removed, looks like inflexible trash. _vp_ 2023-01-16
+ * Priority 0 to make it available to lower priority callbacks.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @global int $content_width Content width.
+ *
+ * @return void
+ */
+function twenty_twenty_one_content_width() {
+  // This variable is intended to be overruled from themes.
+  // Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
+  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+  $GLOBALS['content_width'] = apply_filters( 'twenty_twenty_one_content_width', 750 );
+}
+add_action( 'after_setup_theme', 'twenty_twenty_one_content_width', 0 );
+
+/**
+ * Enqueue scripts and styles.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
 **/
-// function wco_content_width() {
-//   // This variable is intended to be overruled from themes.
-//   // Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
-//   // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-//   $GLOBALS['content_width'] = apply_filters( 'twenty_twenty_one_content_width', 750 );
-// }
-// add_action( 'after_setup_theme', 'wco_content_width', 0 );
+function twenty_twenty_one_scripts() {
+  // Note, the is_IE global variable is defined by WordPress and is used
+  // to detect if the current browser is internet explorer.
+  global $is_IE, $wp_scripts;
+  if ( $is_IE ) {
+    // If IE 11 or below, use a flattened stylesheet with static values replacing CSS Variables.
+    wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/assets/css/ie.css', array(), wp_get_theme()->get( 'Version' ) );
+  } else {
+    // If not IE, use the standard stylesheet.
+    wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
+  }
 
+  // RTL styles.
+  wp_style_add_data( 'twenty-twenty-one-style', 'rtl', 'replace' );
 
-function wco_enqueue_scripts() {
-  global $wp_scripts;
+  // Print styles.
+  wp_enqueue_style( 'twenty-twenty-one-print-style', get_template_directory_uri() . '/assets/css/print.css', array(), wp_get_theme()->get( 'Version' ), 'print' );
 
-  // wp_deregister_script('jquery');
-  // wp_enqueue_script('jquery', 'https://code.jquery.com/jquery-3.6.0.min.js', array(), null, true);
-  // wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js', array('jquery'), null, true);
-  wp_enqueue_script('jquery-ui-core');
-
-  // wp_enqueue_style('normalize',     get_template_directory_uri() . '/assets/css/normalize.css');
-  wp_enqueue_style('style',         get_template_directory_uri() . '/assets/css-compiled/site.css',            array(), wp_get_theme()->get('Version') );
-  wp_enqueue_style('style-nav',     get_template_directory_uri() . '/assets/css-compiled/site-navigation.css', array(), wp_get_theme()->get('Version') );
-  wp_enqueue_style('blocks_inputs', get_template_directory_uri() . '/assets/css-compiled/blocks-inputs.css',   array(), wp_get_theme()->get('Version') );
-  wp_enqueue_style('print-style',   get_template_directory_uri() . '/assets/css/print.css',                    array(), wp_get_theme()->get('Version'), 'print' );
-
+  // Threaded comment reply styles.
   if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
     wp_enqueue_script( 'comment-reply' );
   }
@@ -260,57 +393,70 @@ function wco_enqueue_scripts() {
     'twenty-twenty-one-ie11-polyfills-asset',
     get_template_directory_uri() . '/assets/js/polyfills.js',
     array(),
-    wp_get_theme()->get('Version'),
+    wp_get_theme()->get( 'Version' ),
     true
   );
 
   // Register the IE11 polyfill loader.
-  wp_register_script('twenty-twenty-one-ie11-polyfills', null, array(), wp_get_theme()->get('Version'), true );
-  wp_add_inline_script('twenty-twenty-one-ie11-polyfills', wp_get_script_polyfill($wp_scripts, array('Element.prototype.matches && Element.prototype.closest && window.NodeList && NodeList.prototype.forEach' => 'twenty-twenty-one-ie11-polyfills-asset' ) ) );
+  wp_register_script(
+    'twenty-twenty-one-ie11-polyfills',
+    null,
+    array(),
+    wp_get_theme()->get( 'Version' ),
+    true
+  );
+  wp_add_inline_script(
+    'twenty-twenty-one-ie11-polyfills',
+    wp_get_script_polyfill(
+      $wp_scripts,
+      array(
+        'Element.prototype.matches && Element.prototype.closest && window.NodeList && NodeList.prototype.forEach' => 'twenty-twenty-one-ie11-polyfills-asset',
+      )
+    )
+  );
 
   // Main navigation scripts.
   if ( has_nav_menu( 'primary' ) ) {
-    wp_enqueue_script('twenty-twenty-one-primary-navigation-script',
+    wp_enqueue_script(
+      'twenty-twenty-one-primary-navigation-script',
       get_template_directory_uri() . '/assets/js/primary-navigation.js',
       array( 'twenty-twenty-one-ie11-polyfills' ),
-      wp_get_theme()->get('Version'),
+      wp_get_theme()->get( 'Version' ),
       true
     );
   }
 
   // Responsive embeds script.
-  wp_enqueue_script('twenty-twenty-one-responsive-embeds-script',
+  wp_enqueue_script(
+    'twenty-twenty-one-responsive-embeds-script',
     get_template_directory_uri() . '/assets/js/responsive-embeds.js',
     array( 'twenty-twenty-one-ie11-polyfills' ),
     wp_get_theme()->get( 'Version' ),
     true
   );
-
-  wp_enqueue_script('wasya_co_js',
-    get_template_directory_uri() . '/assets/js/wasya_co.js',
-    array('jquery'),
-    wp_get_theme()->get( 'Version' ),
-    true // in footer
-  );
 }
-add_action( 'wp_enqueue_scripts', 'wco_enqueue_scripts' );
+add_action( 'wp_enqueue_scripts', 'twenty_twenty_one_scripts' );
 
-// /**
-//  * Enqueue block editor script.
-//  */
-// function wco_block_editor_script() {
-//   wp_enqueue_script( 'wco-editor', get_theme_file_uri( '/assets/js/editor.js' ), array( 'wp-blocks', 'wp-dom' ), wp_get_theme()->get( 'Version' ), true );
+/**
+ * Enqueue block editor script.
+**/
+// function twentytwentyone_block_editor_script() {
+//   wp_enqueue_script( 'twentytwentyone-editor', get_theme_file_uri( '/assets/js/editor.js' ), array( 'wp-blocks', 'wp-dom' ), wp_get_theme()->get( 'Version' ), true );
 // }
-// add_action( 'enqueue_block_editor_assets', 'wco_block_editor_script' );
+// add_action( 'enqueue_block_editor_assets', 'twentytwentyone_block_editor_script' );
 
 /**
  * Fix skip link focus in IE11.
  *
  * This does not enqueue the script because it is tiny and because it is only for IE11,
  * thus it does not warrant having an entire dedicated blocking script being loaded.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
  * @link https://git.io/vWdr2
  */
-function wco_skip_link_focus_fix() {
+function twenty_twenty_one_skip_link_focus_fix() {
+
   // If SCRIPT_DEBUG is defined and true, print the unminified file.
   if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
     echo '<script>';
@@ -325,128 +471,129 @@ function wco_skip_link_focus_fix() {
     <?php
   }
 }
-add_action( 'wp_print_footer_scripts', 'wco_skip_link_focus_fix' );
+add_action( 'wp_print_footer_scripts', 'twenty_twenty_one_skip_link_focus_fix' );
 
+/**
+ * Enqueue non-latin language styles.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twenty_twenty_one_non_latin_languages() {
+  $custom_css = twenty_twenty_one_get_non_latin_css( 'front-end' );
+
+  if ( $custom_css ) {
+    wp_add_inline_style( 'twenty-twenty-one-style', $custom_css );
+  }
+}
+add_action( 'wp_enqueue_scripts', 'twenty_twenty_one_non_latin_languages' );
+
+// SVG Icons class.
 require get_template_directory() . '/classes/class-twenty-twenty-one-svg-icons.php';
 
+// Custom color classes.
 require get_template_directory() . '/classes/class-twenty-twenty-one-custom-colors.php';
 new Twenty_Twenty_One_Custom_Colors();
 
-// Enhance the theme by hooking into WordPress
+// Enhance the theme by hooking into WordPress.
 require get_template_directory() . '/inc/template-functions.php';
 
-// Menu functions and filters
+// Menu functions and filters.
 require get_template_directory() . '/inc/menu-functions.php';
 
-// Custom template tags for the theme
+// Custom template tags for the theme.
 require get_template_directory() . '/inc/template-tags.php';
 
-// Customizer additions
+// Customizer additions.
 require get_template_directory() . '/classes/class-twenty-twenty-one-customize.php';
 new Twenty_Twenty_One_Customize();
 
-// Block Patterns
+// Block Patterns.
 require get_template_directory() . '/inc/block-patterns.php';
 
-// Block Styles
+// Block Styles.
 require get_template_directory() . '/inc/block-styles.php';
 
-// Dark Mode
+// Dark Mode.
 require_once get_template_directory() . '/classes/class-twenty-twenty-one-dark-mode.php';
 new Twenty_Twenty_One_Dark_Mode();
 
-function owa_tracker() { echo "\n\n"; ?>
-    <!-- OWA Tracker -->
-    <script type="text/javascript">
-    //<![CDATA[
-    var owa_baseUrl = 'https://owa.wasya.co/';
-    var owa_cmds = owa_cmds || [];
-    owa_cmds.push(['setSiteId', '00cc61b2003af4e35fa914b1733c02ba']); // wasya_co
-    owa_cmds.push(['trackPageView']);
-    owa_cmds.push(['trackClicks']);
-    (function() {
-        var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
-        owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
-        _owa.src = owa_baseUrl + 'modules/base/dist/owa.tracker.js';
-        var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
-    }());
-    //]]>
-    </script>
-    <!-- End OWA Tracker -->
-<? }
-
-function google_analytics() { echo "\n\n"; ?>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53077236-2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-53077236-2');
-  </script>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0865LYY50K"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-0865LYY50K');
-  </script>
-<? echo "\n\n"; }
-
-function bootstrap_css() { echo "\n\n"; ?>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap-theme.min.css" crossorigin="anonymous"> -->
-
-  <? /* HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries */ ?>
-  <? /* WARNING: Respond.js doesn't work if you view the page via file:// */ ?>
-  <!--[if lt IE 9]>
-    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-  <![endif]-->
-<? }
-
-function mui_css() { echo "\n\n"; ?>
-  <link href="//cdn.muicss.com/mui-0.10.3/css/mui.min.css" rel="stylesheet" type="text/css" />
-  <script src="//cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
-<? }
-
-function carousel_css() { echo "\n\n"; ?>
-  <!-- 2023-01-15 homepage carousel -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@latest/dist/css/glide.core.min.css">
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@latest/dist/css/glide.theme.min.css"> -->
-  <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide@latest/dist/glide.min.js"></script>
-<? }
-
-function wco_customize_preview_init() {
+/**
+ * Enqueue scripts for the customizer preview.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_customize_preview_init() {
   wp_enqueue_script(
-    'wco-customize-helpers',
+    'twentytwentyone-customize-helpers',
     get_theme_file_uri( '/assets/js/customize-helpers.js' ),
     array(),
     wp_get_theme()->get( 'Version' ),
     true
   );
+
   wp_enqueue_script(
-    'wco-customize-preview',
+    'twentytwentyone-customize-preview',
     get_theme_file_uri( '/assets/js/customize-preview.js' ),
-    array( 'customize-preview', 'customize-selective-refresh', 'jquery', 'wco-customize-helpers' ),
+    array( 'customize-preview', 'customize-selective-refresh', 'jquery', 'twentytwentyone-customize-helpers' ),
     wp_get_theme()->get( 'Version' ),
     true
   );
 }
-add_action( 'customize_preview_init', 'wco_customize_preview_init' );
+add_action( 'customize_preview_init', 'twentytwentyone_customize_preview_init' );
 
-/*
- * Naming ok _vp_ 2023-01-16
-**/
-function wco_customize_controls_enqueue_scripts() {
-  wp_enqueue_script('wco-customize-helpers', get_theme_file_uri( '/assets/js/customize-helpers.js' ), array(), wp_get_theme()->get('Version'), true );
+/**
+ * Enqueue scripts for the customizer.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_customize_controls_enqueue_scripts() {
+
+  wp_enqueue_script(
+    'twentytwentyone-customize-helpers',
+    get_theme_file_uri( '/assets/js/customize-helpers.js' ),
+    array(),
+    wp_get_theme()->get( 'Version' ),
+    true
+  );
 }
-add_action( 'customize_controls_enqueue_scripts', 'wco_customize_controls_enqueue_scripts' );
+add_action( 'customize_controls_enqueue_scripts', 'twentytwentyone_customize_controls_enqueue_scripts' );
 
-function wco_add_ie_class() { // Add "is-IE" class to body if the user is on Internet Explorer.
+/**
+ * Calculate classes for the main <html> element.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_the_html_classes() {
+  /**
+   * Filters the classes for the main <html> element.
+   *
+   * @since Twenty Twenty-One 1.0
+   *
+   * @param string The list of classes. Default empty string.
+   */
+  $classes = apply_filters( 'twentytwentyone_html_classes', '' );
+  if ( ! $classes ) {
+    return;
+  }
+  echo 'class="' . esc_attr( $classes ) . '"';
+}
+
+/**
+ * Add "is-IE" class to body if the user is on Internet Explorer.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_add_ie_class() {
   ?>
   <script>
   if ( -1 !== navigator.userAgent.indexOf( 'MSIE' ) || -1 !== navigator.appVersion.indexOf( 'Trident/' ) ) {
@@ -455,12 +602,18 @@ function wco_add_ie_class() { // Add "is-IE" class to body if the user is on Int
   </script>
   <?php
 }
-add_action( 'wp_footer', 'wco_add_ie_class' );
+add_action( 'wp_footer', 'twentytwentyone_add_ie_class' );
 
-if ( ! function_exists( 'wp_get_list_item_separator' ) ) {
+if ( ! function_exists( 'wp_get_list_item_separator' ) ) :
+  /**
+   * Retrieves the list item separator based on the locale.
+   *
+   * Added for backward compatibility to support pre-6.0.0 WordPress versions.
+   *
+   * @since 6.0.0
+   */
   function wp_get_list_item_separator() {
-    return __( ', ' );
+    /* translators: Used between list items, there is a space after the comma. */
+    return __( ', ', 'twentytwentyone' );
   }
-}
-
-
+endif;
