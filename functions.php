@@ -306,7 +306,7 @@ add_action( 'widgets_init', function () {
   register_sidebar(array(
     'name'          => esc_html__( 'Footer', 't21' ),
     'id'            => 'widget-footer-1',
-    'description'   => esc_html__( 'Add widgets here to appear in your footer.', 'twentytwentyone' ),
+    'description'   => esc_html__( 'Add widgets here to appear in your footer.', 't21' ),
     'before_widget' => '<section id="%1$s" class="widget %2$s">',
     'after_widget'  => '</section>',
     'before_title'  => '<h2 class="widget-title">',
@@ -314,9 +314,9 @@ add_action( 'widgets_init', function () {
   ) );
 
   register_sidebar(array(
-    'name'          => esc_html__( 'Footer', 't21' ),
+    'name'          => esc_html__( 'Markers', 't21' ),
     'id'            => 'widget-markers-1',
-    'description'   => esc_html__( 'Add widgets here to appear in your footer.', 'twentytwentyone' ),
+    'description'   => esc_html__( 'Widget space, markers', 't21' ),
     'before_widget' => '<section id="%1$s" class="widget %2$s">',
     'after_widget'  => '</section>',
     'before_title'  => '<h2 class="widget-title">',
@@ -328,6 +328,11 @@ add_action( 'widgets_init', function () {
  * From: https://developer.wordpress.org/reference/functions/add_rewrite_rule/
 **/
 function add_rules_for_rewrite() {
+  add_rewrite_rule(
+    'en/cities/?$',
+    'index.php?category_name=cities',
+    'top');
+
   add_rewrite_rule(
     'en/cities/travel-to/([a-zA-Z0-9-_]+)/?$',
     'index.php?category_name=$matches[1]',
@@ -374,7 +379,8 @@ function twenty_twenty_one_scripts() {
     wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/assets/css/ie.css', array(), wp_get_theme()->get( 'Version' ) );
   } else {
     // If not IE, use the standard stylesheet.
-    wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
+    wp_enqueue_style( 't21-style', get_template_directory_uri() . '/assets/css/style.css', array(), wp_get_theme()->get( 'Version' ) );
+    wp_enqueue_style( 't21-my-style', get_template_directory_uri() . '/assets/css/my-style.css', array(), wp_get_theme()->get( 'Version' ) );
   }
 
   // RTL styles.
@@ -389,8 +395,7 @@ function twenty_twenty_one_scripts() {
   }
 
   // Register the IE11 polyfill file.
-  wp_register_script(
-    'twenty-twenty-one-ie11-polyfills-asset',
+  wp_register_script( 'twenty-twenty-one-ie11-polyfills-asset',
     get_template_directory_uri() . '/assets/js/polyfills.js',
     array(),
     wp_get_theme()->get( 'Version' ),
@@ -398,15 +403,14 @@ function twenty_twenty_one_scripts() {
   );
 
   // Register the IE11 polyfill loader.
-  wp_register_script(
-    'twenty-twenty-one-ie11-polyfills',
+  wp_register_script( 'twenty-twenty-one-ie11-polyfills',
     null,
     array(),
     wp_get_theme()->get( 'Version' ),
     true
   );
-  wp_add_inline_script(
-    'twenty-twenty-one-ie11-polyfills',
+
+  wp_add_inline_script( 'twenty-twenty-one-ie11-polyfills',
     wp_get_script_polyfill(
       $wp_scripts,
       array(
@@ -427,8 +431,7 @@ function twenty_twenty_one_scripts() {
   }
 
   // Responsive embeds script.
-  wp_enqueue_script(
-    'twenty-twenty-one-responsive-embeds-script',
+  wp_enqueue_script( 'twenty-twenty-one-responsive-embeds-script',
     get_template_directory_uri() . '/assets/js/responsive-embeds.js',
     array( 'twenty-twenty-one-ie11-polyfills' ),
     wp_get_theme()->get( 'Version' ),
