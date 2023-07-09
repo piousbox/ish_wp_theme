@@ -1,57 +1,38 @@
-<?
+<?php
 /**
- * Displays a category (e.g. Chicago)
-**/
+ * The template for displaying archive pages
+ *
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ *
+ * @package WordPress
+ * @subpackage Twenty_Twenty_One
+ * @since Twenty Twenty-One 1.0
+ */
+
 get_header();
+
 $description = get_the_archive_description();
 ?>
 
-<div class="TwofoldLayoutW" >
-  <div class="TwofoldLayout" >
-    <div class="LeftPane" >
-      <div class='Breadcrumbs' >
-        <h5>Breadcrumbs</h5>
-        <? the_archive_title(); ?>
-      </div>
-      <div class='Map' >
-        <h5>A Map, or main content</h5>
-      </div>
-    </div>
-    <div class="RightPane" >
-      <div class='Markers' >
-        <h5>Markers</h5>
-      </div>
+<?php if ( have_posts() ) : ?>
 
-      <? if ( have_posts() ) : ?>
-        <div class="Newsfeed">
-          <h5>Newsfeed</h5>
+	<header class="page-header alignwide">
+		<?php the_archive_title( '<h1 class="page-title">', '</h1>' ); ?>
+		<?php if ( $description ) : ?>
+			<div class="archive-description"><?php echo wp_kses_post( wpautop( $description ) ); ?></div>
+		<?php endif; ?>
+	</header><!-- .page-header -->
 
-          <header class="page-header alignwide">
+	<?php while ( have_posts() ) : ?>
+		<?php the_post(); ?>
+		<?php get_template_part( 'template-parts/content/content', get_theme_mod( 'display_excerpt_or_full_post', 'excerpt' ) ); ?>
+	<?php endwhile; ?>
 
-            <? if ( $description ) : ?>
-              <div class="archive-description"><?= wp_kses_post( wpautop( $description ) ); ?></div>
-            <? endif; ?>
-          </header>
+	<?php twenty_twenty_one_the_posts_navigation(); ?>
 
-          <? while ( have_posts() ) : ?>
-            <? the_post(); ?>
-            <? get_template_part( 'template-parts/content/content', get_theme_mod( 'display_excerpt_or_full_post', 'excerpt' ) ); ?>
-          <? endwhile; ?>
+<?php else : ?>
+	<?php get_template_part( 'template-parts/content/content-none' ); ?>
+<?php endif; ?>
 
-          <? twenty_twenty_one_the_posts_navigation(); ?>
-
-        </div>
-      <? else : ?>
-        <? get_template_part( 'template-parts/content/content-none' ); ?>
-      <? endif; ?>
-
-    </div>
-  </div>
-</div>
-
-
-
-      </main><!-- #main -->
-		</div><!-- #primary -->
-	</div><!-- #content -->
-<? // get_footer();
+<?php
+get_footer();

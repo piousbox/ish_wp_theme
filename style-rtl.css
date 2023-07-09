@@ -3845,6 +3845,16 @@ table.wp-calendar-table caption {
 	padding-bottom: calc(1.7 * var(--global--spacing-vertical));
 }
 
+.no-widgets .site-footer {
+	margin-top: calc(6 * var(--global--spacing-vertical));
+}
+@media only screen and (max-width: 481px) {
+
+	.no-widgets .site-footer {
+		margin-top: calc(3 * var(--global--spacing-vertical));
+	}
+}
+
 .site-footer > .site-info {
 	padding-top: var(--global--spacing-vertical);
 	color: var(--footer--color-text);

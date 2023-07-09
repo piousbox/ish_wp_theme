@@ -1,26 +1,31 @@
-<?
+<?php
 /**
  * Template part for displaying page content in page.php
  *
-**/
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ *
+ * @package WordPress
+ * @subpackage Twenty_Twenty_One
+ * @since Twenty Twenty-One 1.0
+ */
 
 ?>
 
-<article id="post-<? the_ID(); ?>" <? post_class(); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
-	<? if ( ! is_front_page() ) : ?>
+	<?php if ( ! is_front_page() ) : ?>
 		<header class="entry-header alignwide">
-			<? get_template_part( 'template-parts/header/entry-header' ); ?>
-			<? twenty_twenty_one_post_thumbnail(); ?>
+			<?php get_template_part( 'template-parts/header/entry-header' ); ?>
+			<?php twenty_twenty_one_post_thumbnail(); ?>
 		</header><!-- .entry-header -->
-	<? elseif ( has_post_thumbnail() ) : ?>
+	<?php elseif ( has_post_thumbnail() ) : ?>
 		<header class="entry-header alignwide">
-			<? twenty_twenty_one_post_thumbnail(); ?>
+			<?php twenty_twenty_one_post_thumbnail(); ?>
 		</header><!-- .entry-header -->
-	<? endif; ?>
+	<?php endif; ?>
 
 	<div class="entry-content">
-		<?
+		<?php
 		the_content();
 
 		wp_link_pages(
@@ -34,9 +39,9 @@
 		?>
 	</div><!-- .entry-content -->
 
-	<? if ( get_edit_post_link() ) : ?>
+	<?php if ( get_edit_post_link() ) : ?>
 		<footer class="entry-footer default-max-width">
-			<?
+			<?php
 			edit_post_link(
 				sprintf(
 					/* translators: %s: Post title. Only visible to screen readers. */
@@ -48,5 +53,5 @@
 			);
 			?>
 		</footer><!-- .entry-footer -->
-	<? endif; ?>
-</article><!-- #post-<? the_ID(); ?> -->
+	<?php endif; ?>
+</article><!-- #post-<?php the_ID(); ?> -->
