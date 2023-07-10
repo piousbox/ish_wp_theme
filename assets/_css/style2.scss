@@ -1,4 +1,40 @@
 
-body {
-  // background: red !important;
+.display-posts-listing {
+  .listing-item {
+    position: relative;
+
+    .excerpt-dash { display: none; }
+
+    a.title {
+      font-size: 1.4em;
+    }
+
+    a.image {
+      // border: 2px solid red;
+      margin: 0 10px 10px 0;
+
+      width: 100px;
+      height: 100px;
+      position: relative;
+      display: block;
+
+      // flex-basis: 100px;
+      // flex-grow: 0;
+      flex-shrink: 0;
+      img {
+        position: relative;
+        // display: none;
+      }
+    }
+
+    .r1 {
+      display: flex;
+    }
+
+    .more-link {
+      text-decoration: underline;
+    }
+
+  }
 }
+

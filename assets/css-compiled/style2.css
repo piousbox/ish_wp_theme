@@ -1,0 +1,26 @@
+.display-posts-listing .listing-item {
+  position: relative;
+}
+.display-posts-listing .listing-item .excerpt-dash {
+  display: none;
+}
+.display-posts-listing .listing-item a.title {
+  font-size: 1.4em;
+}
+.display-posts-listing .listing-item a.image {
+  margin: 0 10px 10px 0;
+  width: 100px;
+  height: 100px;
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+}
+.display-posts-listing .listing-item a.image img {
+  position: relative;
+}
+.display-posts-listing .listing-item .r1 {
+  display: flex;
+}
+.display-posts-listing .listing-item .more-link {
+  text-decoration: underline;
+}

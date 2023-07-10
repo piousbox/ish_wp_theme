@@ -1,4 +1,6 @@
 0.1.0 - 2023-07    - had elementor issues?
 0.2.0 - 2023-07-09 - exactly what twentytwentyone is
 0.3.0 - 2023-07-09 - I started to re-modify things.
+                     configured style compiling
+0.4.0 - 2023-07-09 - 
 
