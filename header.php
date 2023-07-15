@@ -18,6 +18,16 @@
   <meta charset="<? bloginfo( 'charset' ); ?>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <? wp_head(); ?>
+
+  <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- <script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script> -->
+  <script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+
+  <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+
 </head>
 
 <body <? body_class(); ?>>

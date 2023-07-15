@@ -24,3 +24,6 @@
 .display-posts-listing .listing-item .more-link {
   text-decoration: underline;
 }
+.site-header {
+  padding: 0;
+}
