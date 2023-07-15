@@ -1,3 +1,6 @@
+:root {
+  --global--font-size-page-title: 2em;
+}
 .display-posts-listing .listing-item {
   position: relative;
 }
